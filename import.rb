@@ -1,6 +1,5 @@
 require "RubyGems"
 require_gem "ActiveRecord"
-include GC
 
 #ActiveRecord::Base.logger = Logger.new(STDOUT)
 ActiveRecord::Base.establish_connection(
@@ -20,7 +19,6 @@ end
 class Ratings < ActiveRecord::Base
 end
 
-
 def import_movies
 	#$100,000 Pyramid, The (2001) (VG)			2001
 	title_re = /^([a-zA-z ]+)\s+\([0-9]+\)\s+([0-9]+)$/ix
@@ -31,8 +29,6 @@ def import_movies
 		
 			if m.id % 200 == 0
 				puts m.id
-				garbage_collect
-				sleep 1
 			end
 		end
 	end
@@ -117,7 +113,7 @@ def import_ratings
 	end
 end
 
-import_genres
+#import_genres
 #import_movies
 #import_times
 #import_budgets
