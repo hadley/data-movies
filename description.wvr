@@ -1,0 +1,55 @@
+\documentclass[11pt]{article}
+\usepackage{fullpage}
+\usepackage{graphicx}
+\usepackage[pdftex,bookmarks,pagebackref,colorlinks,pdfpagemode=UseOutlines, pdfauthor={Hadley Wickham}, pdftitle={Introduction to the movies dataset}]{hyperref} 
+\title{Weaver test}
+\author{Hadley Wickham}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+<% 
+	library(lattice) 
+	m <- read.csv("movies.csv", colClasses = c("character", rep("numeric", 15), rep("factor", 8)))
+	
+	cnt.col <- which(sapply(m, is.numeric))
+	cat.col <- which(sapply(m, is.factor))
+%>
+
+\section{Data collection}
+
+The movies data set was created from data available from the internet movie database, http://imdb.com.  
+
+Text files download via ftp from http://uk.imdb.com/interfaces/.  
+
+\begin{itemize}
+\item business.list - total budget
+\item genres.list
+\item movies.list
+\item mpaa-ratings-reasons.list
+\item ratings.list
+\item running-times.list
+\end{itemize}
+
+Used a ruby program to extract the relevent information and store in a database.  Then export to csv for easy import into a range of programs.
+
+A total of <%= cat(nrow(m)) %> records. 
+
+The first few rows of the database look like
+
+<%= xtable(head(m[,cnt.col]),digits=rep(0,16)) %>
+
+<%= xtable(head(m[,cat.col]),digits=rep(0,9)) %>
+
+Summary of continuous variables 
+
+<%= 
+xtable(t(sapply(m[,cnt.col], function(x) list(min=min(x,na.rm=T), mean=mean(x, na.rm=T), median=median(x,na.rm=T), max=max(x,na.rm=T), missing=sum(is.na(x))))),digits=c(0,2,0,0,0, 0))
+%>
+
+\section{Individual variables}
+
+Paragraph or two for each variable.  Highlight particularly large or small variables.
+\end{document}
