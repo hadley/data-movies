@@ -54,6 +54,28 @@ def import_budgets
 	end
 end
 
+def import_mpaa_ratings
+	dashes = "-------------------------------------------------------------------------------"
+	title_re = /MV:\s+([a-z ]*?) \s \(([0-9]+)\)/ix
+	rating_re = /RE: Rated (.*?) /i
+
+	File.new("mpaa-ratings-reasons.list").each(dashes) do |l|
+		if match = title_re.match(l)
+			if rt = rating_re.match(l)
+				title, year, rating = match[1], match[2], rt[1]
+
+				m = Movie.find_by_title_and_year title, year
+				if m
+					puts "#{title} #{rating}"
+					m.update_attribute("mpaa_rating", rating)
+				end
+
+			end
+		end
+	end
+end
+
+
 def import_genres
 #D2: The Mighty Ducks (1994)				Family
 	genre_re = /^([a-z ]*?)\s+\(([0-9]+)\)\s+(.*?)$/ix
@@ -79,11 +101,14 @@ def import_ratings
 		if match = ratings_re.match(l)
 			rating, votes, outof10, title, year = match[1], match[2], match[3].to_f, match[4], match[5]
 		
-			#puts "#{title} #{outof10} #{votes}";
 
 			m = Movie.find_by_title_and_year title, year
 			if m
-				m.update_attributes({'imdb_votes' => votes, 'imdb_rating' => outof10})
+				puts "#{title} #{rating} #{outof10} #{votes}";
+				m.update_attributes({
+					'imdb_votes' => votes, 
+					'imdb_rating' => outof10,
+					'imdb_rating_votes' => rating})
 			end
 		
 			if f.lineno % 1000 == 0
@@ -94,11 +119,14 @@ def import_ratings
 	end
 end
 
-#import_movies
-#import_ratings
-#import_times
-#import_budgets
-#import_genres
+import_movies
+import_ratings
+import_times
+import_mpaa_ratings
+import_budgets
+import_genres
+
+
 
 puts Movie.count( "budget > 0")
 puts Movie.count( "length > 0")
