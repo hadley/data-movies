@@ -1,4 +1,4 @@
-require "rubygems	"
+require "rubygems"
 require_gem "activerecord"
 
 #ActiveRecord::Base.logger = Logger.new(STDOUT)
