@@ -3,11 +3,13 @@ id INTEGER PRIMARY KEY,
 title varchar(250),
 year integer,
 budget integer,
-length integer
+length integer,
+imdb_rating integer,
+imdb_votes integer
 );
 
-CREATE TABLE Ratings (id INTEGER PRIMARY KEY , movie_id medium_int, score varchar(10), outof10 float);
-CREATE TABLE Genres (id INTEGER PRIMARY KEY , movie_id medium_int, genre varchar(50));
+CREATE TABLE Ratings (id INTEGER PRIMARY KEY, movie_id integer, score varchar(10), outof10 float, votes integer);
+CREATE TABLE Genres (id INTEGER PRIMARY KEY , movie_id integer, genre varchar(50));
 
 CREATE INDEX title on Movies (title);
 CREATE INDEX year on Movies (year);
