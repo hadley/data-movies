@@ -1,5 +1,5 @@
-require "RubyGems"
-require_gem "ActiveRecord"
+require "rubygems	"
+require_gem "activerecord"
 
 #ActiveRecord::Base.logger = Logger.new(STDOUT)
 ActiveRecord::Base.establish_connection(

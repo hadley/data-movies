@@ -94,10 +94,11 @@ def import_ratings
 	end
 end
 
-#import_genres
-#import_movies
-#import_times
-#import_budgets
+import_movies
+import_ratings
+import_times
+import_budgets
+import_genres
 
 #puts Movie.count( "budget > 0")
 #puts Movie.count( "length > 0")
