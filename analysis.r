@@ -1,4 +1,4 @@
-library(lattice); trellis.par.set(col.whitebg())
+library(lattice); lattice.options(default.theme = col.whitebg()) 
 setwd("~/documents/movies")
 
 m <- read.csv("movies.csv")

@@ -10,6 +10,21 @@ ActiveRecord::Base.establish_connection(
 class Movie < ActiveRecord::Base
 	has_many :genres
 	has_many :ratings
+	
+	def self.genres_of_interest
+		["Action", "Animation", "Comedy", "Drama", "Documentary", "Romance", "Short"]
+	end
+	
+	def genres_binary
+		Movie.genres_of_interest.map do |genre| 
+			genres.detect{|g| g.genre == genre} ? 1 : 0
+		end
+	end
+
+	def ratings_breakdown
+		imdb_rating_votes.split(//).map{|s| s.gsub("*", "10").gsub(".", "NA")}
+	end
+	
 end
 
 class Genre < ActiveRecord::Base

@@ -4,7 +4,7 @@ title varchar(250),
 year integer,
 budget integer,
 length integer,
-imdb_rating integer,
+imdb_rating float,
 imdb_votes integer,
 imdb_rating_votes varchar(10),
 mpaa_rating varchar(5)
