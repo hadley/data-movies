@@ -1,5 +1,5 @@
 require "csv"
-require "import"
+require "movies"
 require "FileUtils"
 
 
@@ -20,4 +20,10 @@ movies = Movie.find_all 'length > 0 AND budget > 0 AND imdb_rating > 0'
 
 FileUtils.mkdir_p "csv"
 export("csv/all.csv", movies)
+export("csv/comedy.csv", movies.find_all{|m| m.genres.detect{|g| g.genre == "Comedy"} })
+export("csv/action.csv", movies.find_all{|m| m.genres.detect{|g| g.genre == "Action"} })
+export("csv/romance.csv", movies.find_all{|m| m.genres.detect{|g| g.genre == "Romance"} })
+export("csv/animation.csv", movies.find_all{|m| m.genres.detect{|g| g.genre == "Animation"} })
+export("csv/drama.csv", movies.find_all{|m| m.genres.detect{|g| g.genre == "Drama"} })
+
 
