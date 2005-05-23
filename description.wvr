@@ -55,7 +55,7 @@ Movies were selected for inclusion if they had a known length and had been rated
 	\item action, animation, comedy, drama, documentary, romance, short.  Binary variables representing if movie was classified as belonging to that genre.
 \end{itemize}
 
-\section{Overall details}
+\section{Data summary}
 
 There are a total of <%= cat(nrow(m)) %> movies from ``<%= cat(m[1,1])%>'' to  ``<%= cat(m[nrow(m),1])%>'', and the first few rows of the data look like:
 
@@ -63,23 +63,19 @@ There are a total of <%= cat(nrow(m)) %> movies from ``<%= cat(m[1,1])%>'' to  `
 
 <%= xtable(head(m[,cat.col]),digits=rep(0,9)) %>
 
-\section{Individual variables}
+<% 
+cnt.sum <- t(sapply(m[, cnt.col], function(x) c(range(x, na.rm=T), sum(!is.na(unique(x))), sum(is.na(x)))))
+colnames(cnt.sum) <- c("Minimum","Maximum","Unique values","Missing values")
+%>
+<%= xtable(cnt.sum) %>
 
-\subsection{Year}
-
-All <%= cat(nrow(m)) %> movies have known year.
-
+<% weaver.width <- 3; weaver.height <- 3%>
 <%=g histogram(~year, m, nint =121) %>
-
-\subsection{Budget}
-
-<%= cat(sum(!is.na(m$budget))) %> movies have known budget.  
 <%=g histogram(~budget, m, nint=100) %>
-
-\subsection{Length}
 
 <%=g histogram(~length, m, nint=100, subset=length<=200) %>
 <%=g histogram(~rating, m, nint=15) %>
+
 <%=g histogram(~votes, m, nint=50, scales=list(x=list(log=T))) %>
 <%=g histogram(~mpaa, m, nint=15,type="count", subset=mpaa != "") %>
 
