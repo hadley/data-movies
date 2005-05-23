@@ -69,35 +69,20 @@ There are a total of <%= cat(nrow(m)) %> movies from ``<%= cat(m[1,1])%>'' to  `
 
 All <%= cat(nrow(m)) %> movies have known year.
 
-<%=g histogram(~year, m) %>
+<%=g histogram(~year, m, nint =121) %>
 
 \subsection{Budget}
 
-<%= cat(sum(!is.na(m$budget))) %> movies have known budget.  This is a rather small (and potentially biased) subset, so we may want to be cautious about drawing any conclusions about the distribution of budgets.
-
-<%=g histogram(~budget, m) %>
-
-That's a big range - which were the most expensive?
-
-<%
-	movies.long <- subset(m[order(m$length, decreasing=T), ], length > 300, c("title", "year", "length"))
-	movies.expensive <- subset(m[order(m$budget, decreasing=T), ], budget > 100000000, c("title", "year", "budget"))
-%>
-
-<%= xtable(movies.expensive, digits=rep(0, 4)) %>
+<%= cat(sum(!is.na(m$budget))) %> movies have known budget.  
+<%=g histogram(~budget, m, nint=100) %>
 
 \subsection{Length}
 
-<%= cat(sum(!is.na(m$length))) %> movies have known length.
+<%=g histogram(~length, m, nint=100, subset=length<=200) %>
+<%=g histogram(~rating, m, nint=15) %>
+<%=g histogram(~votes, m, nint=50, scales=list(x=list(log=T))) %>
+<%=g histogram(~mpaa, m, nint=15,type="count", subset=mpaa != "") %>
 
-<%=g histogram(~length, m) %>
 
-Some of those movies are very long!!  Which ones are they?
-
-<%= xtable(movies.long, digits=rep(0, 4)) %>
-
-How are the length disributed after we remove those very long movies?
-
-<%=g histogram(~length, m, subset = length < 240) %>
 
 \end{document}
