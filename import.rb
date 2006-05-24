@@ -93,42 +93,36 @@ def import_genres
 	end
 end
 
+require 'sqlite3'
+$db = SQLite3::Database.new( "movies.sqlite3" )
+
 def import_ratings
-#.0.1112000      14   5.9  365 Nights in Hollywood (1934)
-	ratings_re = /([0-9.]+) \s+ ([0-9]+) \s+ ([0-9.]+) \s+ ([a-z ]+?) \s+ \(([0-9]+)\)/ix
+	#.0.1112000      14   5.9  365 Nights in Hollywood (1934)
+	ratings_re = /([0-9.\*]+) \s+ ([0-9]+) \s+ ([0-9.]+) \s+ ([a-z ]+?) \s+ \(([0-9]+)\)/ix
 	f = File.new("ratings.list")
+	$db.transaction
+	stmt = $db.prepare("UPDATE Movies set imdb_votes=?, imdb_rating=?, imdb_rating_votes='r?' WHERE title='?' AND year=?;")
+	
 	f.each_line do |l|
 		if match = ratings_re.match(l)
 			rating, votes, outof10, title, year = match[1], match[2], match[3].to_f, match[4], match[5]
-		
-
-			m = Movie.find_by_title_and_year title, year
-			if m
-				#puts "#{title} #{rating} #{outof10} #{votes}";
-				m.update_attributes({
-					'imdb_votes' => votes, 
-					'imdb_rating' => outof10,
-					'imdb_rating_votes' => rating})
-			end
-		
-			if f.lineno % 1000 == 0
-				puts "#{title} #{outof10} #{votes}";
-				puts f.lineno
-			end
+			stmt.execute!(votes, outof10, rating, title, year)
 		end
 	end
+	$db.commit
+	
 end
 
-import_movies
+#import_movies
 import_ratings
-import_times
-import_mpaa_ratings
-import_budgets
-import_genres
+#import_times
+#import_mpaa_ratings
+#import_budgets
+#import_genres
 
 
-puts Movie.count( "budget > 0")
-puts Movie.count( "length > 0")
-puts Movie.count( "budget > 0 and length > 0")
-puts Movie.count( "imdb_votes > 0 and length > 0")
-puts Movie.count( "budget > 0 and length > 0 and imdb_votes > 0")
+#puts Movie.count( "budget > 0")
+#puts Movie.count( "length > 0")
+#puts Movie.count( "budget > 0 and length > 0")
+#puts Movie.count( "imdb_votes > 0 and length > 0")
+#puts Movie.count( "budget > 0 and length > 0 and imdb_votes > 0")

@@ -50,7 +50,7 @@ Movies were selected for inclusion if they had a known length and had been rated
 	\item length.  Length in minutes.
 	\item rating.  Average IMDB user rating.
 	\item votes.  Number of IMDB users who rated this movie.
-	\item r1-10.  Multiplying by ten gives percentile (to nearest 10\%) of users who rated this movie a 1.
+	\item r1-10.  Distribution of votes for each rating, to nearest decile: NA = no votes, 1 = 1-9\% votes, 2 = 11-19\% of votes, etc.  Due to rounding errors these may not sum to 10.
 	\item mpaa.  MPAA rating.
 	\item action, animation, comedy, drama, documentary, romance, short.  Binary variables representing if movie was classified as belonging to that genre.
 \end{itemize}
