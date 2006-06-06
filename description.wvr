@@ -12,7 +12,7 @@
 
 <% 
 	library(lattice) 
-	m <- read.csv("movies.csv", colClasses = c("character", rep("numeric", 15), rep("factor", 8)))
+	m <- read.table("movies.tab", colClasses = c("character", rep("numeric", 15), rep("factor", 8)), sep="\t", header=TRUE, quote="", comment="")
 	
 	cnt.col <- which(sapply(m, is.numeric))
 	cat.col <- which(sapply(m, is.factor))
@@ -41,7 +41,7 @@ The following text files were downloaded and used:
 	\item running-times.list.  Movie length in minutes.
 \end{itemize}
 
-Movies were selected for inclusion if they had a known length and had been rated by at least one imdb user.  The csv file contains the following fields:
+Movies were selected for inclusion if they had a known length and had been rated by at least one IMDB user.  The tab delimited file contains the following fields:
 
 \begin{itemize}
 	\item title.  Title of the movie.
@@ -50,35 +50,30 @@ Movies were selected for inclusion if they had a known length and had been rated
 	\item length.  Length in minutes.
 	\item rating.  Average IMDB user rating.
 	\item votes.  Number of IMDB users who rated this movie.
-	\item r1-10.  Distribution of votes for each rating, to nearest decile: NA = no votes, 1 = 1-9\% votes, 2 = 11-19\% of votes, etc.  Due to rounding errors these may not sum to 10.
+	\item r1-10.  Distribution of votes for each rating, to mid point of nearest decile: 0 = no votes, 4.5 = 1-9$\%$ votes, 14.5 = 11-19$\%$ of votes, etc.  Due to rounding errors these may not sum to 100.
 	\item mpaa.  MPAA rating.
 	\item action, animation, comedy, drama, documentary, romance, short.  Binary variables representing if movie was classified as belonging to that genre.
 \end{itemize}
 
 \section{Data summary}
 
-There are a total of <%= cat(nrow(m)) %> movies from ``<%= cat(m[1,1])%>'' to  ``<%= cat(m[nrow(m),1])%>'', and the first few rows of the data look like:
-
-<%= xtable(head(m[,c(1,cnt.col)]),digits=rep(0,17)) %>
-
-<%= xtable(head(m[,cat.col]),digits=rep(0,9)) %>
+There are a total of <%= cat(nrow(m)) %> movies from ``\<%= cat(m[1,1])%>'' to  ``<%= cat(m[nrow(m),1])%>''.
 
 <% 
 cnt.sum <- t(sapply(m[, cnt.col], function(x) c(range(x, na.rm=T), sum(!is.na(unique(x))), sum(is.na(x)))))
 colnames(cnt.sum) <- c("Minimum","Maximum","Unique values","Missing values")
 %>
-<%= xtable(cnt.sum) %>
+<%= xtable(cnt.sum, digits=rep(0, 5)) %>
 
-<% weaver.width <- 3; weaver.height <- 3%>
+<% weaver.width <- 2.8; weaver.height <- 2.8%>
 <%=g histogram(~year, m, nint =121) %>
-<%=g histogram(~budget, m, nint=100) %>
+<%=g histogram(~budget, m, nint=100, scales=list(x=list(log=T))) %>
 
 <%=g histogram(~length, m, nint=100, subset=length<=200) %>
 <%=g histogram(~rating, m, nint=15) %>
 
 <%=g histogram(~votes, m, nint=50, scales=list(x=list(log=T))) %>
 <%=g histogram(~mpaa, m, nint=15,type="count", subset=mpaa != "") %>
-
 
 
 \end{document}
