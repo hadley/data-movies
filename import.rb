@@ -101,12 +101,12 @@ def import_ratings
 	
 end
 
-#import_movies
-#import_times
-#import_budgets
-#import_mpaa_ratings
-#import_ratings
-#import_genres
+import_movies
+import_times
+import_budgets
+import_mpaa_ratings
+import_ratings
+import_genres
 
 
 #puts Movie.count( "budget > 0")

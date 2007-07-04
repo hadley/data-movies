@@ -1,3 +1,5 @@
+-- sqlite3 movies.sqlite3 < movies.sql
+
 CREATE TABLE Movies (
 id INTEGER PRIMARY KEY,
 title varchar(250),
