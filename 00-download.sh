@@ -1,0 +1,1 @@
+wget ftp://ftp.fu-berlin.de/pub/misc/movies/database/*.gz 
