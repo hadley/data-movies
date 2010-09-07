@@ -6,31 +6,40 @@ $title = "[a-z,&-;0-9$#+=\/!?. ]+"
 def import_movies
 	#$100,000 Pyramid, The (2001) (VG)			2001
 	title_re = /^(#{$title}) \s+ \([0-9]+\) \s+ ([0-9]+)$/ix
+	i = 0
 
 	stmt = $db.prepare("INSERT INTO Movies (title, year) VALUES (?, ?);")
 	$db.transaction do
 		$db.execute "DELETE FROM Movies;"
 	
 		File.new("data/movies.list").each_line do |l|
+			print "." if (i = i + 1) % 5000 == 0; STDOUT.flush
 			if match = title_re.match(l)
 				stmt.execute!(match[1], match[2].to_i)
 			end
 		end
 	end
+	
+	puts
 end
 
 def import_times
 	#"Ballyskillen Opera House, The" (1980)			30	(6 episodes)
 	time_re = /^(#{$title}) \s+ \(([0-9]+)\) \s+ (?:[a-z]+:)?([0-9]+)/ix 
+	i = 0
 
 	stmt = $db.prepare("UPDATE Movies set length=? WHERE title=? AND year=?;")
-	$db.transaction do 
+  $db.transaction do 
 		File.new("data/running-times.list").each_line do |l|
+			print "." if (i = i + 1) % 5000 == 0; STDOUT.flush
+		  
 			if match = time_re.match(l)
 				stmt.execute!(match[3].to_i, match[1], match[2].to_i)
 			end
 		end
-	end
+  end
+	
+	puts
 end
 
 
@@ -75,11 +84,12 @@ def import_genres
 		$db.execute "DELETE FROM Genres;"
 		
 		File.new("data/genres.list").each_line do |l|
-			puts i if (i = i + 1) % 5000 == 0
+			print "." if (i = i + 1) % 1000 == 0; STDOUT.flush
 			if match = genre_re.match(l)
 				stmt.execute!(match[3], match[1], match[2].to_i)
 			end
 		end
+		puts
 	end
 end
 
@@ -101,11 +111,17 @@ def import_ratings
 	
 end
 
-import_movies
+# puts "Importing movies"
+# import_movies
+puts "Importing times"
 import_times
+puts "Importing budgets"
 import_budgets
+puts "Importing ratings"
 import_mpaa_ratings
+puts "Importing votes"
 import_ratings
+puts "Importing genres"
 import_genres
 
 
