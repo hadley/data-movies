@@ -17,6 +17,7 @@ CREATE TABLE Genres (id INTEGER PRIMARY KEY , movie_id integer, genre varchar(50
 
 CREATE INDEX title on Movies (title);
 CREATE INDEX year on Movies (year);
+CREATE INDEX titleyear on Movies (title, year);
 CREATE INDEX id on Movies (id);
 CREATE INDEX rid on Ratings (id);
 CREATE INDEX rmid on Ratings (movie_id);
