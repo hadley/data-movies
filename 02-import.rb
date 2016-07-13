@@ -1,7 +1,11 @@
 require 'rubygems'
 require 'sqlite3'
 $db = SQLite3::Database.new( "movies.sqlite3" )
-$title = "[a-z,&-;0-9$#+=\/!?. ]+"
+$title = "[a-z,&-;0-9$#+=\/!?. ]+|\"[a-z,&-;0-9$#+=\/!?. ]+\""
+
+def remove_quotations(str)
+    str.chomp('"').reverse.chomp('"').reverse
+end 
 
 def import_movies
 	#$100,000 Pyramid, The (2001) (VG)			2001
@@ -14,7 +18,7 @@ def import_movies
 	
 		File.new("data/movies.list").each_line do |l|
 			print "." if (i = i + 1) % 5000 == 0; STDOUT.flush
-			if match = title_re.match(l)
+			if match = title_re.match(l.chars.select(&:valid_encoding?).join)
 				stmt.execute!(match[1], match[2].to_i)
 			end
 		end
@@ -32,9 +36,11 @@ def import_times
   $db.transaction do 
 		File.new("data/running-times.list").each_line do |l|
 			print "." if (i = i + 1) % 5000 == 0; STDOUT.flush
-		  
+                        l = l.chars.select(&:valid_encoding?).join
 			if match = time_re.match(l)
-				stmt.execute!(match[3].to_i, match[1], match[2].to_i)
+				stmt.execute!(match[3].to_i, 
+                                              remove_quotations(match[1]), 
+                                              match[2].to_i)
 			end
 		end
   end
@@ -45,14 +51,17 @@ end
 
 def import_budgets
 	dashes = "-------------------------------------------------------------------------------"
-	title_re = /MV:\s+(#{$title}?) \s \(([0-9]+)\)/ix
+	title_re = /MV:\s+(#{$title}?)\s+\(([0-9]+)\)/ix
 	budget_re = /BT:\s+USD\s+([0-9,.]+)/ix
 
 	stmt = $db.prepare("UPDATE Movies set budget=? WHERE title=? AND year=?;")
 	$db.transaction do 
 		File.new("data/business.list").each(dashes) do |l|
+                        l=l.chars.select(&:valid_encoding?).join
 			if match = title_re.match(l.to_s) and bt = budget_re.match(l.to_s)
-				stmt.execute!(bt[1].gsub!(",","").to_i, match[1], match[2].to_i) 
+				stmt.execute!(bt[1].gsub!(",","").to_i, 
+                                              remove_quotations(match[1]), 
+                                              match[2].to_i) 
 			end
 		end
 	end
@@ -66,8 +75,11 @@ def import_mpaa_ratings
 	stmt = $db.prepare("UPDATE Movies set mpaa_rating=? WHERE title=? AND year=?;")
 	$db.transaction do 
 		File.new("data/mpaa-ratings-reasons.list").each(dashes) do |l|
+                        l = l.chars.select(&:valid_encoding?).join
 			if match = title_re.match(l.to_s) and rt = rating_re.match(l.to_s)
-				stmt.execute!(rt[1], match[1], match[2].to_i)
+				stmt.execute!(rt[1], 
+                                              remove_quotations(match[1]), 
+                                              match[2].to_i)
 			end
 		end
 	end
@@ -85,8 +97,11 @@ def import_genres
 		
 		File.new("data/genres.list").each_line do |l|
 			print "." if (i = i + 1) % 1000 == 0; STDOUT.flush
+                        l = l.chars.select(&:valid_encoding?).join
 			if match = genre_re.match(l)
-				stmt.execute!(match[3], match[1], match[2].to_i)
+				stmt.execute!(match[3], 
+                                              remove_quotations(match[1]), 
+                                              match[2].to_i)
 			end
 		end
 		puts
@@ -102,8 +117,9 @@ def import_ratings
 	$db.transaction
 	
 	File.new("data/ratings.list").each_line do |l|
+                l = l.chars.select(&:valid_encoding?).join
 		if match = ratings_re.match(l)
-			rating, votes, outof10, title, year = match[1], match[2], match[3], match[4], match[5]
+			rating, votes, outof10, title, year = match[1], match[2], match[3], remove_quotations(match[4]), match[5]
 			stmt.execute!(votes, outof10, rating, title, year)
 		end
 	end
@@ -111,8 +127,8 @@ def import_ratings
 	
 end
 
-# puts "Importing movies"
-# import_movies
+puts "Importing movies"
+import_movies
 puts "Importing times"
 import_times
 puts "Importing budgets"
@@ -123,10 +139,3 @@ puts "Importing votes"
 import_ratings
 puts "Importing genres"
 import_genres
-
-
-#puts Movie.count( "budget > 0")
-#puts Movie.count( "length > 0")
-#puts Movie.count( "budget > 0 and length > 0")
-#puts Movie.count( "imdb_votes > 0 and length > 0")
-#puts Movie.count( "budget > 0 and length > 0 and imdb_votes > 0")
