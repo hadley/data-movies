@@ -13,6 +13,7 @@ def import_movies
 		$db.execute "DELETE FROM Movies;"
 	
 		File.new("data/movies.list").each_line do |l|
+			l = l.force_encoding('iso-8859-1').encode('utf-8')
 			print "." if (i = i + 1) % 5000 == 0; STDOUT.flush
 			if match = title_re.match(l)
 				stmt.execute!(match[1], match[2].to_i)
@@ -31,9 +32,10 @@ def import_times
 	stmt = $db.prepare("UPDATE Movies set length=? WHERE title=? AND year=?;")
   $db.transaction do 
 		File.new("data/running-times.list").each_line do |l|
+			
 			print "." if (i = i + 1) % 5000 == 0; STDOUT.flush
 		  
-			if match = time_re.match(l)
+			if match = time_re.match(l.force_encoding('iso-8859-1').encode('utf-8'))
 				stmt.execute!(match[3].to_i, match[1], match[2].to_i)
 			end
 		end
@@ -51,6 +53,7 @@ def import_budgets
 	stmt = $db.prepare("UPDATE Movies set budget=? WHERE title=? AND year=?;")
 	$db.transaction do 
 		File.new("data/business.list").each(dashes) do |l|
+		    l = l.force_encoding('iso-8859-1').encode('utf-8')
 			if match = title_re.match(l.to_s) and bt = budget_re.match(l.to_s)
 				stmt.execute!(bt[1].gsub!(",","").to_i, match[1], match[2].to_i) 
 			end
@@ -66,6 +69,7 @@ def import_mpaa_ratings
 	stmt = $db.prepare("UPDATE Movies set mpaa_rating=? WHERE title=? AND year=?;")
 	$db.transaction do 
 		File.new("data/mpaa-ratings-reasons.list").each(dashes) do |l|
+			l = l.force_encoding('iso-8859-1').encode('utf-8')
 			if match = title_re.match(l.to_s) and rt = rating_re.match(l.to_s)
 				stmt.execute!(rt[1], match[1], match[2].to_i)
 			end
@@ -84,6 +88,7 @@ def import_genres
 		$db.execute "DELETE FROM Genres;"
 		
 		File.new("data/genres.list").each_line do |l|
+			l = l.force_encoding('iso-8859-1').encode('utf-8')
 			print "." if (i = i + 1) % 1000 == 0; STDOUT.flush
 			if match = genre_re.match(l)
 				stmt.execute!(match[3], match[1], match[2].to_i)
@@ -102,6 +107,7 @@ def import_ratings
 	$db.transaction
 	
 	File.new("data/ratings.list").each_line do |l|
+		l = l.force_encoding('iso-8859-1').encode('utf-8')
 		if match = ratings_re.match(l)
 			rating, votes, outof10, title, year = match[1], match[2], match[3], match[4], match[5]
 			stmt.execute!(votes, outof10, rating, title, year)
@@ -111,8 +117,8 @@ def import_ratings
 	
 end
 
-# puts "Importing movies"
-# import_movies
+puts "Importing movies"
+import_movies
 puts "Importing times"
 import_times
 puts "Importing budgets"

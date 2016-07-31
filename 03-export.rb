@@ -27,21 +27,23 @@ i = 0
 
 File.open("movies.tab", "w") do |out|
 	out << [
-		'title', 'year', 'length', 'budget', 
+		'id', 'title', 'year', 'length', 'budget', 
 		'rating', 'votes', (1..10).map{|i| "r" + i.to_s}, 
 		'mpaa', $genres_of_interest
 	].flatten.join("\t") + "\n"
 
 	db.execute(sql) do |row| 
 		puts i if (i = i + 1) % 5000 == 0
-
 		out << [
-			row["title"], 
-			row["year"], 
-			row["length"], 
-			row["budget"], 
-			row["imdb_rating"], row["imdb_votes"], ratings_breakdown(row["imdb_rating_votes"]), 
-			row["mpaa_rating"], genres_binary(row['id'], db)
+			row[0], #id
+			row[1], #title
+			row[2], #year 
+			row[4], #length
+			row[3], #budget
+			row[5], #imdb_rating
+			row[6], #imdb_votes
+			ratings_breakdown(row[7]), #imdb_rating_breakdown 
+			row[8], genres_binary(row[0], db)
 		].flatten.join("\t") + "\n" rescue nil
 	end
 end
