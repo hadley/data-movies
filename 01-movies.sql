@@ -22,4 +22,5 @@ CREATE INDEX id on Movies (id);
 CREATE INDEX rid on Ratings (id);
 CREATE INDEX rmid on Ratings (movie_id);
 CREATE INDEX gid on Genres (id);
+CREATE INDEX directors on Movies (director);                                                                              
 CREATE INDEX gmid on Genres (movie_id);
