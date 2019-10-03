@@ -14,6 +14,8 @@ The following text files were downloaded and used:
 Movies were selected for inclusion if they had a known length and had been rated by at least one IMDB user. The final output contains the following fields:
 
 * title.  Title of the movie.
+* director. Director of the movie.
+* cast. Actors in the movie.
 * year.  Year of release.
 * budget.  Total budget (if known) in US dollars
 * length.  Length in minutes.
